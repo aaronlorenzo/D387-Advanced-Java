@@ -188,3 +188,14 @@ Insert the following HTML to display the presentation announcement:
 </div>
 <br><br>
 
+
+C.  Explain how you would deploy the Spring application with a Java back end and an Angular front end to cloud services and create a Dockerfile using the attached supporting document "How to Create a Docker Account" by doing the following:
+
+1.  Build the Dockerfile to create a single image that includes all code, including modifications made in parts B1 to B3. Commit and push the final Dockerfile to GitLab.
+CREATE 
+DockerFile
+   FROM openJDK:11
+   COPY ./D387_sample_code-0.0.2-SNAPSHOT.jar /usr/src/D387_sample_code-0.0.2-SNAPSHOT.jar
+   WORKDIR /usr/src
+   EXPOSE 8080
+   CMD ["java", "-jar", "D387_sample_code-0.0.2-SNAPSHOT.jar"]
