@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
-import {HttpClient, HttpResponse,HttpHeaders} from "@angular/common/http";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
 import { Observable } from 'rxjs';
 import {map} from "rxjs/operators";
 
@@ -15,6 +15,13 @@ import {map} from "rxjs/operators";
 })
 export class AppComponent implements OnInit{
 
+  // C1B - Code to print the welcome message in French and English on the site
+  welcomeMessageEnglish$!: Observable<string>
+  welcomeMessageFrench$!: Observable<string>
+
+  // C3B - Code to announce the presentation w/ time zone conversions
+  announcePresentation$!: Observable<string>
+
   constructor(private httpClient:HttpClient){}
 
   private baseURL:string='http://localhost:8080';
@@ -28,13 +35,21 @@ export class AppComponent implements OnInit{
   currentCheckInVal!:string;
   currentCheckOutVal!:string;
 
-    ngOnInit(){
-      this.roomsearch= new FormGroup({
-        checkin: new FormControl(' '),
-        checkout: new FormControl(' ')
-      });
+  ngOnInit(){
 
- //     this.rooms=ROOMS;
+    // C1B - Code to print the welcome message in French and English on the site
+    this.welcomeMessageFrench$ = this.httpClient.get(this.baseURL + '/welcome?lang=fr-CA', {responseType: 'text'} )
+    this.welcomeMessageEnglish$ = this.httpClient.get(this.baseURL + '/welcome?lang=en-US', {responseType: 'text'} )
+
+    // C3B - Code to add conference announcement
+    this.announcePresentation$ = this.httpClient.get(this.baseURL + '/presentation', {responseType: 'text'} )
+
+    this.roomsearch= new FormGroup({
+      checkin: new FormControl(' '),
+      checkout: new FormControl(' ')
+    });
+
+    //     this.rooms=ROOMS;
 
 
     const roomsearchValueChanges$ = this.roomsearch.valueChanges;
@@ -46,51 +61,54 @@ export class AppComponent implements OnInit{
     });
   }
 
-    onSubmit({value,valid}:{value:Roomsearch,valid:boolean}){
-      this.getAll().subscribe(
+  onSubmit({value,valid}:{value:Roomsearch,valid:boolean}){
+    this.getAll().subscribe(
 
-        rooms => {console.log(Object.values(rooms)[0]);this.rooms=<Room[]>Object.values(rooms)[0]; }
+      rooms => {
+        console.log(Object.values(rooms)[0]);
+        this.rooms=<Room[]>Object.values(rooms)[0];
+        // C2 - Code to add the CAD/EUR "prices"
+        this.rooms.forEach( room => { room.priceCAD = room.price; room.priceEUR = room.price})
+      }
+    );
+  }
+  reserveRoom(value:string){
+    this.request = new ReserveRoomRequest(value, this.currentCheckInVal, this.currentCheckOutVal);
 
+    this.createReservation(this.request);
+  }
+  createReservation(body:ReserveRoomRequest) {
+    let bodyString = JSON.stringify(body); // Stringify payload
+    let headers = new Headers({'Content-Type': 'application/json'}); // ... Set content type to JSON
+    // let options = new RequestOptions({headers: headers}); // Create a request option
 
-      );
-    }
-    reserveRoom(value:string){
-      this.request = new ReserveRoomRequest(value, this.currentCheckInVal, this.currentCheckOutVal);
-
-      this.createReservation(this.request);
-    }
-    createReservation(body:ReserveRoomRequest) {
-      let bodyString = JSON.stringify(body); // Stringify payload
-      let headers = new Headers({'Content-Type': 'application/json'}); // ... Set content type to JSON
-     // let options = new RequestOptions({headers: headers}); // Create a request option
-
-     const options = {
+    const options = {
       headers: new HttpHeaders().append('key', 'value'),
 
     }
 
-      this.httpClient.post(this.postUrl, body, options)
-        .subscribe(res => console.log(res));
-    }
+    this.httpClient.post(this.postUrl, body, options)
+      .subscribe(res => console.log(res));
+  }
 
   /*mapRoom(response:HttpResponse<any>): Room[]{
     return response.body;
   }*/
 
-    getAll(): Observable<any> {
+  getAll(): Observable<any> {
 
 
-       return this.httpClient.get(this.baseURL + '/room/reservation/v1?checkin='+ this.currentCheckInVal + '&checkout='+this.currentCheckOutVal, {responseType: 'json'});
-    }
-
+    return this.httpClient.get(this.baseURL + '/room/reservation/v1?checkin='+ this.currentCheckInVal + '&checkout='+this.currentCheckOutVal, {responseType: 'json'});
   }
+
+}
 
 
 
 export interface Roomsearch{
-    checkin:string;
-    checkout:string;
-  }
+  checkin:string;
+  checkout:string;
+}
 
 
 
@@ -99,6 +117,9 @@ export interface Room{
   id:string;
   roomNumber:string;
   price:string;
+  // C2 - Code to add the CAD/EUR "prices"
+  priceCAD:string;
+  priceEUR:string;
   links:string;
 
 }

@@ -1,29 +1,87 @@
-<strong> **DO NOT DISTRIBUTE OR PUBLICLY POST SOLUTIONS TO THESE LABS. MAKE ALL FORKS OF THIS REPOSITORY WITH SOLUTION CODE PRIVATE. PLEASE REFER TO THE STUDENT CODE OF CONDUCT AND ETHICAL EXPECTATIONS FOR COLLEGE OF INFORMATION TECHNOLOGY STUDENTS FOR SPECIFICS. ** </strong>
+DO NOT DISTRIBUTE OR PUBLICLY POST SOLUTIONS TO THESE LABS. MAKE ALL FORKS OF THIS REPOSITORY WITH SOLUTION CODE PRIVATE. PLEASE REFER TO THE STUDENT CODE OF CONDUCT AND ETHICAL EXPECTATIONS FOR COLLEGE OF INFORMATION TECHNOLOGY STUDENTS FOR SPECIFICS.
 
-# WESTERN GOVERNORS UNIVERSITY 
-## D387 – ADVANCED JAVA
-Welcome to Advanced Java! This is an opportunity for students to write multithreaded object-oriented code using Java frameworks and determine how to deploy software applications using cloud services.
+Western Governors University
+D387 – Advanced Java
 
-FOR SPECIFIC TASK INSTRUCTIONS AND REQUIREMENTS FOR THIS ASSESSMENT, PLEASE REFER TO THE COURSE PAGE.
-## BASIC INSTRUCTIONS
-For this assessment, you will modify a Spring application with a Java back end and an Angular front end to include multithreaded language translation, a message at different time zones, and currency exchange. Then, build a Docker image of the current multithreaded Spring application and containerize it using the supporting documents provided in this task.
+Tasks
+a. Build Resource Bundles
+Create resource bundles for both English and French to comply with Canadian law. Include a welcome message in each language's resource bundle.
 
+Resource Bundle 'translation':
 
-## SUPPLEMENTAL RESOURCES 
-1.	How to clone a project to IntelliJ using Git?
+translation_en_us.properties
 
-> Ensure that you have Git installed on your system and that IntelliJ is installed using [Toolbox](https://www.jetbrains.com/toolbox-app/). Make sure that you are using version 2022.3.2. Once this has been confirmed, click the clone button and use the 'IntelliJ IDEA (HTTPS)' button. This will open IntelliJ with a prompt to clone the proejct. Save it in a safe location for the directory and press clone. IntelliJ will prompt you for your credentials. Enter in your WGU Credentials and the project will be cloned onto your local machine.  
+hello=Hello!
+welcome=Welcome to the Landon Hotel!
 
-2. How to create a branch and start Development?
+translation_fr_ca.properties
+hello=Bonjour!
+welcome=Bienvenue à l'hôtel Landon
 
-- GitLab method
-> Press the '+' button located near your branch name. In the dropdown list, press the 'New branch' button. This will allow you to create a name for your branch. Once the branch has been named, you can select 'Create Branch' to push the branch to your repository.
+b. Display Welcome Messages Using Threads
+Display the welcome message in both English and French by applying the resource bundles using a different thread for each language.
 
-- IntelliJ method
-> In IntelliJ, Go to the 'Git' button on the top toolbar. Select the new branch option and create a name for the branch. Make sure checkout branch is selected and press create. You can now add a commit message and push the new branch to the local repo.
+Create:
 
-## SUPPORT
-If you need additional support, please navigate to the course page and reach out to your course instructor.
-## FUTURE USE
-Take this opportunity to create or add to a simple resume portfolio to highlight and showcase your work for future use in career search, experience, and education!
+internationalization.WelcomeController.java
+package edu.wgu.d387_sample_code.internationalization;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Locale;
+
+@CrossOrigin(origins = "http://localhost:4200") // Needed for front end
+@RestController
+public class WelcomeController {
+
+    @GetMapping("/welcome")
+
+    public ResponseEntity displayWelcome (@RequestParam("lang") String lang) { // Request the html lang parameter here
+        Locale locale = Locale.forLanguageTag(lang); // create locale object based on lang parameter
+        WelcomeMessage welcomeMessage = new WelcomeMessage(locale); // create welcomeMessage to pull the corresponding lang
+        return new ResponseEntity (welcomeMessage.getWelcomeMessage(), HttpStatus.OK); // respond
+    }
+}
+internationalization.WelcomeMessage.java
+package edu.wgu.d387_sample_code.internationalization;
+
+import java.util.Locale;
+import java.util.ResourceBundle;
+
+public class WelcomeMessage implements Runnable {
+
+    Locale locale;
+
+    // Constructor
+    public WelcomeMessage(Locale locale) {
+        this.locale = locale;
+    }
+
+    public String getWelcomeMessage() {
+        ResourceBundle bundle = ResourceBundle.getBundle("translation", locale);
+        return bundle.getString("welcome");
+    }
+
+    @Override
+    public void run() {
+        System.out.println( "Thread verification: " + getWelcomeMessage() + ", ThreadID: " + Thread.currentThread().getId() );
+    }
+}
+Modify:
+
+D387SampleCodeApplication.java
+// Create threads for the Welcome Message in French and English
+WelcomeMessage welcomeMessageEnglish = new WelcomeMessage(Locale.US);
+Thread englishWelcomeThread = new Thread(welcomeMessageEnglish);
+englishWelcomeThread.start();
+
+WelcomeMessage welcomeMessageFrench = new WelcomeMessage(Locale.CANADA_FRENCH);
+Thread frenchWelcomeThread = new Thread(welcomeMessageFrench);
+frenchWelcomeThread.start();
+
 
