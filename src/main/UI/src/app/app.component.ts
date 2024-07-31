@@ -15,12 +15,13 @@ import {map} from "rxjs/operators";
 })
 export class AppComponent implements OnInit{
 
-  // C1B - Code to print the welcome message in French and English on the site
+  // Code to print the welcome message in French and English on the site
   welcomeMessageEnglish$!: Observable<string>
   welcomeMessageFrench$!: Observable<string>
 
-  // C3B - Code to announce the presentation w/ time zone conversions
-  announcePresentation$!: Observable<string>
+//  Code to announce the presentation with time zone conversions
+  announcePresentation$!: Observable<string>;
+
 
   constructor(private httpClient:HttpClient){}
 
@@ -37,12 +38,13 @@ export class AppComponent implements OnInit{
 
   ngOnInit(){
 
-    // C1B - Code to print the welcome message in French and English on the site
+    // Code to print the welcome message in French and English on the site
     this.welcomeMessageFrench$ = this.httpClient.get(this.baseURL + '/welcome?lang=fr-CA', {responseType: 'text'} )
     this.welcomeMessageEnglish$ = this.httpClient.get(this.baseURL + '/welcome?lang=en-US', {responseType: 'text'} )
 
-    // C3B - Code to add conference announcement
-    this.announcePresentation$ = this.httpClient.get(this.baseURL + '/presentation', {responseType: 'text'} )
+//  adding conference announcement
+    this.announcePresentation$ = this.httpClient.get<string>(this.baseURL + '/presentation', { responseType: 'text' as 'json' });
+
 
     this.roomsearch= new FormGroup({
       checkin: new FormControl(' '),
@@ -120,9 +122,10 @@ export interface Room{
   id:string;
   roomNumber:string;
   price:string;
-  // Add price fields for CAD and EUR
+// Add price fields for CAD and EUR
   priceCAD: string;
   priceEUR: string;
+
   links:string;
 
 }

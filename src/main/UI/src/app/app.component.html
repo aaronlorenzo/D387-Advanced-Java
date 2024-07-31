@@ -30,10 +30,13 @@
       <!-- C1B - Code to add French/English -->
       <!-- C3B - Code to add presentation announcement -->
       <div class="scene" id="presentation">
-        <h1>{{announcePresentation$ | async}}</h1>
-      </div><br><br>
+        <h1>{{ announcePresentation$ | async }}</h1>
+      </div>
+      <br><br>
       <!-- C3B - Code to add presentation announcement -->
+
       <div class="row">
+
         <div class=""col-12>
           <div class="gallery">
             <img src="assets/images/intro_room.jpg" alt="Intro Gallery Room Sample Pictures">
@@ -88,6 +91,7 @@
                   <strong>Price: CA${{room.priceCAD}}</strong><br>
                   <strong>Price: EUR€{{room.priceEUR}}</strong><br>
                   <!-- Display CAD and EUR prices -->
+
                 </td>
                 <td>
                   <button type="submit" class="btn btn-primary" (click)="reserveRoom(room.id)">Reserve</button>
