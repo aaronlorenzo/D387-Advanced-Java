@@ -84,4 +84,26 @@ WelcomeMessage welcomeMessageFrench = new WelcomeMessage(Locale.CANADA_FRENCH);
 Thread frenchWelcomeThread = new Thread(welcomeMessageFrench);
 frenchWelcomeThread.start();
 
+2.  Modify the front end to display the price for a reservation in currency rates for U.S. dollars ($), Canadian dollars (C$), and euros (€) on different lines.
+
+app.component.ts
+Modify at lines 70-71:
+// Add prices in CAD and EUR
+this.rooms.forEach(room => {
+room.priceCAD = room.price;
+room.priceEUR = room.price;
+});
+
+
+Modify at lines 120-122:
+// Add price fields for CAD and EUR
+priceCAD: string;
+priceEUR: string;
+
+
+app.component.html
+Modify at lines 87-90:
+<!-- Display CAD and EUR prices -->
+<strong>Price: CA${{room.priceCAD}}</strong><br>
+<strong>Price: EUR€{{room.priceEUR}}</strong><br>
 
