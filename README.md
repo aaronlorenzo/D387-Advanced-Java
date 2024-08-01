@@ -199,3 +199,16 @@ DockerFile
    WORKDIR /usr/src
    EXPOSE 8080
    CMD ["java", "-jar", "D387_sample_code-0.0.2-SNAPSHOT.jar"]
+2. 
+    .  Test the Dockerfile by doing the following:
+
+•   Create a Docker image of the current multithreaded Spring application.
+
+•   Run the Docker image in a container and give the container a name that includes D387_[student ID].
+
+•   Submit a screenshot capture of the running application with evidence it is running in the container.!
+[DockerContainerScreenshot.png](DockerContainerScreenshot.png)
+
+3.  Describe how you would deploy the current multithreaded Spring application to the cloud. Include the name of the cloud service provider you would use.
+This part is explained in the document attached in the submission.
+    Advanced Java D387-Aaron Garro Lorenzo Part C3.docx
