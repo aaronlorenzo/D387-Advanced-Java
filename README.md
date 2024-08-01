@@ -194,7 +194,7 @@ C.  Explain how you would deploy the Spring application with a Java back end and
 1.  Build the Dockerfile to create a single image that includes all code, including modifications made in parts B1 to B3. Commit and push the final Dockerfile to GitLab.
 CREATE 
 DockerFile
-   FROM openJDK:11
+   FROM openJDK:17
    COPY ./D387_sample_code-0.0.2-SNAPSHOT.jar /usr/src/D387_sample_code-0.0.2-SNAPSHOT.jar
    WORKDIR /usr/src
    EXPOSE 8080
